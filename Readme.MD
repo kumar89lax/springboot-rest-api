@@ -1,1 +1,1 @@
-SpringBoot RESTAPI Boilerplate.
+SpringBoot RESTAPI Assignment.
