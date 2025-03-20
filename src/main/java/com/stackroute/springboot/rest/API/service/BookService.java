@@ -11,32 +11,45 @@ import java.util.UUID;
 
 @Service
 public class BookService {
-    //Create a Arraylist with the name 'books'
-
+    private final List<Book> books = new ArrayList<>();
 
     public List<Book> getAllBooks() {
-       //Write code to get all book details
-        return null;
+        return books;
     }
 
     public Optional<Book> getBookById(String id) {
-        //Write code to get book details by id
-        return null;
+        return books.stream()
+                .filter(book -> book.getId().equals(id))
+                .findFirst();
     }
 
     public Book addBook(Book book) {
-        //Write code to add books in the arraylist
-        return null;
+        book.setId(UUID.randomUUID().toString()); // Generate a unique ID
+        books.add(book);
+        return book;
     }
 
-    public Book updateBook(String id, Book updatedBook) {
-        //Write code to update book details
-        return null;
+    public Book updateBook(String id, Book updatedBook) throws BookNotFoundException {
+        Optional<Book> existingBookOpt = getBookById(id);
+
+        if (existingBookOpt.isPresent()) {
+            Book existingBook = existingBookOpt.get();
+            existingBook.setTitle(updatedBook.getTitle());
+            existingBook.setAuthor(updatedBook.getAuthor());
+            existingBook.setPrice(updatedBook.getPrice());
+            return existingBook;
+        } else {
+            throw new BookNotFoundException("Book with ID " + id + " not found");
+        }
     }
 
-    public void deleteBook(String id) {
-        //Write code to delete book details by id
+    public void deleteBook(String id) throws BookNotFoundException {
+        Optional<Book> existingBookOpt = getBookById(id);
 
+        if (existingBookOpt.isPresent()) {
+            books.remove(existingBookOpt.get());
+        } else {
+            throw new BookNotFoundException("Book with ID " + id + " not found");
+        }
     }
 }
-

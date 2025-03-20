@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -18,32 +19,41 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
-    public List<Book> getAllBooks() {
-       //Write code to get all books
-        return null;
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> books = bookService.getAllBooks();
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable String id) {
-        //Write code to get books by ID
-        return null;
+        Optional<Book> book = bookService.getBookById(id);
+        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        //Write code to add books
-        return null;
+        Book newBook = bookService.addBook(book);
+        return new ResponseEntity<>(newBook, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable String id, @RequestBody Book updatedBook) {
-        //Write code to update book details
-        return null;
+        try {
+            Book book = bookService.updateBook(id, updatedBook);
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (BookNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable String id) {
-        //Write code to delete any book by id
-        return null;
+        try {
+            bookService.deleteBook(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (BookNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
