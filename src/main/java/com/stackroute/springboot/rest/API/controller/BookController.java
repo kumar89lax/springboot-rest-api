@@ -25,7 +25,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable String id) {
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         Optional<Book> book = bookService.getBookById(id);
         return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -38,7 +38,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable String id, @RequestBody Book updatedBook) {
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
         try {
             Book book = bookService.updateBook(id, updatedBook);
             return new ResponseEntity<>(book, HttpStatus.OK);
@@ -48,7 +48,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         try {
             bookService.deleteBook(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

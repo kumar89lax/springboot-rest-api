@@ -9,14 +9,14 @@ import jakarta.persistence.Id;
 
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String title;
     private String author;
     private String genre;
     private double price;
 
-    public Book(String id, String title, String author, String genre, double price) {
+    public Book(Long id, String title, String author, String genre, double price) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -27,7 +27,7 @@ public class Book {
     public Book() {
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -46,7 +46,7 @@ public class Book {
     public double getPrice() {
         return price;
     }
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

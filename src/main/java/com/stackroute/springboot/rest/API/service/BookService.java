@@ -2,6 +2,8 @@ package com.stackroute.springboot.rest.API.service;
 
 import com.stackroute.springboot.rest.API.exception.BookNotFoundException;
 import com.stackroute.springboot.rest.API.model.Book;
+import com.stackroute.springboot.rest.API.repo.BookRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,25 +13,22 @@ import java.util.UUID;
 
 @Service
 public class BookService {
-    private final List<Book> books = new ArrayList<>();
+    @Autowired
+   private BookRepo books;
 
     public List<Book> getAllBooks() {
-        return books;
+        return books.findAll();
     }
 
-    public Optional<Book> getBookById(String id) {
-        return books.stream()
-                .filter(book -> book.getId().equals(id))
-                .findFirst();
+    public Optional<Book> getBookById(Long id) {
+        return books.findById(id);
     }
 
     public Book addBook(Book book) {
-        book.setId(UUID.randomUUID().toString()); // Generate a unique ID
-        books.add(book);
-        return book;
+        return books.save(book);
     }
 
-    public Book updateBook(String id, Book updatedBook) throws BookNotFoundException {
+    public Book updateBook(Long id, Book updatedBook) throws BookNotFoundException {
         Optional<Book> existingBookOpt = getBookById(id);
 
         if (existingBookOpt.isPresent()) {
@@ -37,17 +36,17 @@ public class BookService {
             existingBook.setTitle(updatedBook.getTitle());
             existingBook.setAuthor(updatedBook.getAuthor());
             existingBook.setPrice(updatedBook.getPrice());
-            return existingBook;
+            return books.save(existingBook);
         } else {
             throw new BookNotFoundException("Book with ID " + id + " not found");
         }
     }
 
-    public void deleteBook(String id) throws BookNotFoundException {
+    public void deleteBook(Long id) throws BookNotFoundException {
         Optional<Book> existingBookOpt = getBookById(id);
 
         if (existingBookOpt.isPresent()) {
-            books.remove(existingBookOpt.get());
+            books.delete(existingBookOpt.get());
         } else {
             throw new BookNotFoundException("Book with ID " + id + " not found");
         }
