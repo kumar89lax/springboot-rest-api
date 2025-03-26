@@ -24,7 +24,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_creds') {
-                        docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", '--no-cache .')
+                        // Build with explicit path to Dockerfile
+                        docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "-f Dockerfile .")
                         docker.image("${DOCKER_IMAGE}:${BUILD_TAG}").push()
                         docker.image("${DOCKER_IMAGE}:${BUILD_TAG}").push('latest')
                     }
@@ -47,13 +48,13 @@ pipeline {
     }
     
     post {
-        failure {
-            echo "DEBUG: Printing Kubernetes pod details..."
-            sh 'kubectl describe pods'
-            sh 'kubectl logs -l app=springboot-app --tail=50'
-        }
         always {
-            sh 'rm -f ~/.kube/config'  // Cleanup
+            sh 'rm -f ~/.kube/config || echo "Cleanup skipped"'  # Non-blocking cleanup
+        }
+        failure {
+            echo "DEBUG: Printing Kubernetes resources..."
+            sh 'kubectl get pods --all-namespaces'
+            sh 'kubectl describe pods -l app=springboot-app || true'
         }
     }
 }
