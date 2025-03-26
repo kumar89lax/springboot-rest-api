@@ -49,7 +49,7 @@ pipeline {
     
     post {
         always {
-            sh 'rm -f ~/.kube/config || echo "Cleanup skipped"'  # Non-blocking cleanup
+            sh 'rm -f ~/.kube/config || echo "Cleanup skipped"'
         }
         failure {
             echo "DEBUG: Printing Kubernetes resources..."
