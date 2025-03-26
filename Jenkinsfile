@@ -16,7 +16,6 @@ pipeline {
                     cp "$KUBECONFIG" ~/.kube/config && \
                     chmod 600 ~/.kube/config
                 '''
-                sh 'kubectl cluster-info'
             }
         }
         
@@ -24,10 +23,10 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_creds') {
-                        // Build with explicit path to Dockerfile
-                        docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "-f Dockerfile .")
-                        docker.image("${DOCKER_IMAGE}:${BUILD_TAG}").push()
-                        docker.image("${DOCKER_IMAGE}:${BUILD_TAG}").push('latest')
+                        // Explicitly use root user for Docker commands
+                        sh 'sudo docker build -t ${DOCKER_IMAGE}:${BUILD_TAG} -f Dockerfile .'
+                        sh 'sudo docker push ${DOCKER_IMAGE}:${BUILD_TAG}'
+                        sh 'sudo docker push ${DOCKER_IMAGE}:latest'
                     }
                 }
             }
